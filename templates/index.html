@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>DrinkDetect - AI Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(10, 10, 26, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 0.7rem 1.5rem;
+        }
+
+        .navbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* ===== LOGO KIRI ===== */
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .nav-logo i {
+            font-size: 1.4rem;
+            color: #f59e0b;
+        }
+
+        .nav-logo-text {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+
+        .nav-logo-text span {
+            color: #f59e0b;
+        }
+
+        /* ===== MENU TENGAH ===== */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.45);
+            font-weight: 500;
+            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .nav-link.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* ===== TOMBOL DEMO DI KANAN ===== */
+        .nav-btn {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: #0a0a1a;
+            font-weight: 600;
+            font-size: 0.8rem;
+            padding: 0.4rem 1.2rem;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 4px 24px rgba(245, 158, 11, 0.3);
+        }
+
+        /* ===== HAMBURGER ===== */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0.2rem;
+            background: transparent;
+            border: none;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: #fff;
+            border-radius: 4px;
+            transition: 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(4px, 4px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(4px, -4px);
+        }
+
+        /* ===== MOBILE MENU ===== */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 26, 0.96);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 99;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .mobile-menu .nav-link {
+            font-size: 1.3rem;
+            padding: 0.5rem 2rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .mobile-menu .nav-link.active {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.06);
+        }
+
+        .mobile-menu .nav-btn {
+            font-size: 1rem;
+            padding: 0.6rem 2rem;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            .hamburger {
+                display: flex;
+            }
+            .mobile-menu.open {
+                display: flex;
+            }
+            .navbar {
+                padding: 0.5rem 1rem;
+            }
+            .nav-logo-text {
+                font-size: 1rem;
+            }
+            .nav-logo i {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu {
+                display: none !important;
+            }
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.1);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            color: #f59e0b;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #f59e0b;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            max-width: 700px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.05rem;
+            max-width: 560px;
+            line-height: 1.7;
+            margin-top: 1rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #0a0a1a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.7rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* ===== STATS ===== */
+        .stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .stat-item .num {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #f59e0b;
+        }
+
+        .stat-item .label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 500;
+            margin-top: 0.1rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 0.9rem;
+            }
+            .stats {
+                gap: 1rem;
+            }
+            .stat-item .num {
+                font-size: 1.6rem;
+            }
+            .hero {
+                padding: 2rem 1rem 2.5rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+            .btn-primary,
+            .btn-secondary {
+                padding: 0.5rem 1.2rem;
+                font-size: 0.8rem;
+            }
+            .stat-item .num {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* ===== HIDDEN PAGE ===== */
+        .page {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+
+            <!-- LOGO KIRI -->
+            <a href="#" class="nav-logo" onclick="showPage('home')">
+                <i class="fas fa-mug-hot"></i>
+                <span class="nav-logo-text">Drink<span>Detect</span></span>
+            </a>
+
+            <!-- MENU TENGAH -->
+            <div class="nav-menu">
+                <button class="nav-link active" onclick="showPage('home')">Home</button>
+                <button class="nav-link" onclick="showPage('about')">About</button>
+                <button class="nav-link" onclick="showPage('tech')">Tech</button>
+                <button class="nav-link" onclick="showPage('features')">Features</button>
+            </div>
+
+            <!-- TOMBOL DEMO DI KANAN -->
+            <button class="nav-btn" onclick="showPage('demo')">Try Demo</button>
+
+            <!-- HAMBURGER -->
+            <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ===== MOBILE MENU ===== -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="nav-link active" onclick="closeMenu('home')">Home</button>
+        <button class="nav-link" onclick="closeMenu('about')">About</button>
+        <button class="nav-link" onclick="closeMenu('tech')">Tech</button>
+        <button class="nav-link" onclick="closeMenu('features')">Features</button>
+        <button class="nav-btn" onclick="closeMenu('demo')" style="margin-top:0.5rem;">Try Demo</button>
+    </div>
+
+    <!-- ===== HOME ===== -->
+    <div id="page-home" class="page active">
+        <section class="hero">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                AI Computer Vision
+            </div>
+
+            <h1>
+                Deteksi <span>Kopi, Teh & Susu</span><br />
+                dengan YOLOv12
+            </h1>
+
+            <p>
+                Sistem deteksi minuman berbasis YOLOv12 yang mengidentifikasi
+                Kopi, Teh, dan Susu secara <strong style="color:#f59e0b;">real-time</strong>
+                dengan akurasi tinggi.
+            </p>
+
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="showPage('demo')">
+                    <i class="fas fa-play" style="margin-right:0.5rem;"></i> Mulai Deteksi
+                </button>
+                <button class="btn-secondary" onclick="showPage('features')">
+                    <i class="fas fa-eye" style="margin-right:0.5rem;"></i> Lihat Fitur
+                </button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="num">89%</div>
+                    <div class="label">mAP50</div>
+                </div>
+                <div class="stat-item">
+                    <div class="num">9.9ms</div>
+                    <div class="label">Inference Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="num">3</div>
+                    <div class="label">Kelas Minuman</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ===== ABOUT ===== -->
+    <!-- ===== ABOUT ===== -->
+<div id="page-about" class="page">
+    <div style="max-width: 800px; margin: 0 auto; padding: 1.5rem 0;">
+        <h1 style="font-size: 2.4rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem;">
+            Tentang <span style="color: #f59e0b;">Sistem</span>
+        </h1>
+        <p style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-bottom: 2rem;">
+            Deteksi Minuman Berbasis AI
+        </p>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 2rem 2.5rem;">
+            <p style="text-align: justify; line-height: 1.9; color: rgba(255,255,255,0.75); font-size: 1rem; margin-bottom: 1.2rem;">
+                Sistem ini menggunakan <strong style="color: #f59e0b;">YOLOv12</strong>, model computer vision
+                terbaru yang dirancang khusus untuk deteksi objek secara <strong style="color: #f59e0b;">real-time</strong>
+                dengan tingkat akurasi yang sangat tinggi. Arsitektur neural network ini mampu mengenali
+                pola visual dengan presisi luar biasa.
+            </p>
+            <p style="text-align: justify; line-height: 1.9; color: rgba(255,255,255,0.75); font-size: 1rem; margin-bottom: 1.2rem;">
+                Dilatih dengan dataset custom yang mencakup berbagai variasi Kopi hitam,
+                Teh, dan Susu murni
+                dalam berbagai kondisi pencahayaan dan sudut pengambilan gambar.
+            </p>
+            <p style="text-align: justify; line-height: 1.9; color: rgba(255,255,255,0.75); font-size: 1rem;">
+                Dengan kecepatan inferensi di bawah <strong style="color: #f59e0b;">9.9ms</strong> dan mAP50
+                <strong style="color: #f59e0b;">89%</strong>, sistem ini siap digunakan untuk analisis minuman secara otomatis.
+            </p>
+        </div>
+
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+            <button class="btn-primary" onclick="showPage('demo')" style="padding: 0.8rem 2.5rem; font-size: 1rem;">
+                <i class="fas fa-rocket" style="margin-right: 0.6rem;"></i> Coba Sekarang
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- ===== TECH ===== -->
+    <!-- ===== TECH ===== -->
+<div id="page-tech" class="page">
+    <div style="max-width: 900px; margin: 0 auto; padding: 1.5rem 0;">
+        <h1 style="font-size: 2.4rem; font-weight: 700; text-align: center; margin-bottom: 0.3rem;">
+            Technology <span style="color: #f59e0b;">Stack</span>
+        </h1>
+        <p style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-bottom: 2rem;">
+            Teknologi yang digunakan dalam sistem ini
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+
+            <!-- Python -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 56px; height: 56px; background: rgba(59, 130, 246, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem;">
+                    <i class="fab fa-python" style="font-size: 1.8rem; color: #3b82f6;"></i>
+                </div>
+                <h4 style="font-weight: 600; font-size: 0.95rem; color: #3b82f6;">Python 3.11</h4>
+                <p style="font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 0.2rem;">Bahasa pemrograman utama</p>
+            </div>
+
+            <!-- PyTorch -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 56px; height: 56px; background: rgba(239, 68, 68, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem;">
+                    <i class="fas fa-fire" style="font-size: 1.8rem; color: #ef4444;"></i>
+                </div>
+                <h4 style="font-weight: 600; font-size: 0.95rem; color: #ef4444;">PyTorch</h4>
+                <p style="font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 0.2rem;">Framework Deep Learning</p>
+            </div>
+
+            <!-- OpenCV -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 56px; height: 56px; background: rgba(34, 197, 94, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem;">
+                    <i class="fas fa-eye" style="font-size: 1.8rem; color: #22c55e;"></i>
+                </div>
+                <h4 style="font-weight: 600; font-size: 0.95rem; color: #22c55e;">OpenCV</h4>
+                <p style="font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 0.2rem;">Computer Vision</p>
+            </div>
+
+            <!-- Ultralytics -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 56px; height: 56px; background: rgba(168, 85, 247, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem;">
+                    <i class="fas fa-robot" style="font-size: 1.8rem; color: #a855f7;"></i>
+                </div>
+                <h4 style="font-weight: 600; font-size: 0.95rem; color: #a855f7;">Ultralytics</h4>
+                <p style="font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 0.2rem;">Library YOLO</p>
+            </div>
+
+            <!-- Roboflow -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 56px; height: 56px; background: rgba(6, 182, 212, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 1.8rem; color: #06b6d4;"></i>
+                </div>
+                <h4 style="font-weight: 600; font-size: 0.95rem; color: #06b6d4;">Roboflow</h4>
+                <p style="font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 0.2rem;">Dataset & Preprocessing</p>
+            </div>
+
+            <!-- TailwindCSS -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.5rem 1rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 56px; height: 56px; background: rgba(236, 72, 153, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem;">
+                    <i class="fab fa-css3-alt" style="font-size: 1.8rem; color: #ec4899;"></i>
+                </div>
+                <h4 style="font-weight: 600; font-size: 0.95rem; color: #ec4899;">TailwindCSS</h4>
+                <p style="font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 0.2rem;">Framework CSS</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ===== FEATURES ===== -->
+<div id="page-features" class="page">
+    <div style="max-width: 900px; margin: 0 auto; padding: 1.5rem 0;">
+        <h1 style="font-size: 2.4rem; font-weight: 700; text-align: center; margin-bottom: 0.3rem;">
+            Kelas yang <span style="color: #f59e0b;">Dideteksi</span>
+        </h1>
+        <p style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-bottom: 2rem;">
+            3 jenis minuman utama yang dapat diidentifikasi
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem;">
+
+            <!-- KOPI -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.8rem 1.2rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 64px; height: 64px; background: rgba(245, 158, 11, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.8rem;">
+                    <i class="fas fa-mug-hot" style="font-size: 2rem; color: #f59e0b;"></i>
+                </div>
+                <h3 style="font-weight: 700; font-size: 1.2rem; color: #f59e0b; margin-bottom: 0.2rem;">Kopi</h3>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.5;">
+                    Kopi hitam
+                </p>
+            </div>
+
+            <!-- TEH -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.8rem 1.2rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 64px; height: 64px; background: rgba(34, 197, 94, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.8rem;">
+                    <i class="fas fa-leaf" style="font-size: 2rem; color: #22c55e;"></i>
+                </div>
+                <h3 style="font-weight: 700; font-size: 1.2rem; color: #22c55e; margin-bottom: 0.2rem;">Teh</h3>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.5;">
+                    Teh
+                </p>
+            </div>
+
+            <!-- SUSU -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.8rem 1.2rem; text-align: center; transition: all 0.3s ease; cursor: default;">
+                <div style="width: 64px; height: 64px; background: rgba(59, 130, 246, 0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.8rem;">
+                    <i class="fas fa-glass-whiskey" style="font-size: 2rem; color: #3b82f6;"></i>
+                </div>
+                <h3 style="font-weight: 700; font-size: 1.2rem; color: #3b82f6; margin-bottom: 0.2rem;">Susu</h3>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.5;">
+                    Susu murni
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ===== DEMO ===== -->
+<div id="page-demo" class="page">
+    <div style="max-width: 1000px; margin: 0 auto; padding: 1rem 0 2rem;">
+
+        <!-- HEADER -->
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <h1 style="font-size: 2.2rem; font-weight: 700;">
+                Deteksi <span style="color: #f59e0b;">Minuman</span>
+            </h1>
+            <p style="color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-top: 0.2rem;">
+                Upload gambar  <strong style="color: #f59e0b;">Kopi, Teh, atau Susu</strong>
+            </p>
+        </div>
+
+        <!-- TOMBOL MODE -->
+        <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.2rem;">
+            <button id="btnImage" style="padding: 0.5rem 1.5rem; border-radius: 30px; border: 1px solid rgba(245,158,11,0.3); background: rgba(245,158,11,0.1); color: #f59e0b; font-weight: 500; cursor: pointer; font-size: 0.85rem; transition: all 0.3s ease;">
+                <i class="fas fa-image" style="margin-right: 0.4rem;"></i> Upload Gambar
+            </button>
+        </div>
+
+        <!-- GRID 2 KOLOM -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;">
+
+            <!-- ===== KIRI - UPLOAD ===== -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem;">
+
+
+                <!-- Upload Mode -->
+
+                <div id="uploadMode">
+
+                    <h3 style="font-weight:600;font-size:1rem;margin-bottom:0.8rem;">
+                        <i class="fas fa-cloud-upload-alt"
+                        style="color:#f59e0b;">
+                        </i>
+
+                        Upload Gambar
+                    </h3>
+
+
+                    <div id="dropZone"
+                    style="
+                    border:2px dashed rgba(255,255,255,0.08);
+                    border-radius:12px;
+                    padding:1.8rem;
+                    text-align:center;
+                    cursor:pointer;
+                    ">
+
+
+                        <i class="fas fa-cloud-upload-alt"
+                        style="
+                        font-size:2rem;
+                        color:rgba(255,255,255,0.12);
+                        ">
+                        </i>
+
+
+                        <p>
+                        Drag & drop gambar di sini
+                        </p>
+
+
+                        <p>
+                        atau klik untuk memilih file
+                        </p>
+
+
+                        <input
+                        type="file"
+                        id="fileInput"
+                        accept="image/*"
+                        style="display:none;"
+                        />
+
+
+                    </div>
+
+
+
+                    <button id="detectBtn"
+                    disabled
+                    style="
+                    width:100%;
+                    margin-top:0.8rem;
+                    padding:0.6rem;
+                    background:linear-gradient(135deg,#f59e0b,#f97316);
+                    border:none;
+                    border-radius:10px;
+                    font-weight:600;
+                    opacity:0.4;
+                    ">
+
+                    Detect Minuman
+
+                    </button>
+
+
+                </div>
+
+
+                <p style="
+                font-size:0.65rem;
+                color:rgba(255,255,255,0.15);
+                text-align:center;
+                margin-top:0.8rem;
+                ">
+
+                <i class="fas fa-shield-alt"></i>
+                File aman, tidak disimpan di server
+
+                </p>
+
+
+            </div>
+
+            <!-- ===== KANAN - HASIL DETEKSI ===== -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem;">
+                <h3 style="font-weight: 600; font-size: 1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-chart-bar" style="color: #f59e0b;"></i> Hasil Deteksi
+                </h3>
+
+                <div id="imagePreview" style="border-radius: 12px; background: rgba(0,0,0,0.25); min-height: 160px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.15); font-size: 0.85rem; flex-direction: column; gap: 0.3rem; border: 1px solid rgba(255,255,255,0.03);">
+                    <i class="fas fa-image" style="font-size: 1.8rem;"></i>
+                    <span>Belum ada gambar</span>
+                </div>
+
+                <div id="detectionResults" style="margin-top: 0.6rem; font-size: 0.85rem; color: rgba(255,255,255,0.35); text-align: center; min-height: 24px;">
+                    Hasil deteksi akan muncul di sini
+                </div>
+
+                <div id="stats" style="display: none; margin-top: 0.8rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; text-align: center;">
+                    <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 0.4rem;">
+                        <div style="font-weight: 700; font-size: 1.1rem; color: #f59e0b;" id="totalCount">0</div>
+                        <div style="font-size: 0.6rem; color: rgba(255,255,255,0.3);">Total Objek</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 0.4rem;">
+                        <div style="font-weight: 700; font-size: 1.1rem; color: #22c55e;" id="classCount">0</div>
+                        <div style="font-size: 0.6rem; color: rgba(255,255,255,0.3);">Kelas</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 0.4rem;">
+                        <div style="font-weight: 700; font-size: 1.1rem; color: #3b82f6;" id="timeCount">0ms</div>
+                        <div style="font-size: 0.6rem; color: rgba(255,255,255,0.3);">Waktu</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOADING -->
+        <div id="loading" style="display: none; text-align: center; margin-top: 0.8rem;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 1.2rem; color: #f59e0b;"></i>
+            <span style="font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-left: 0.5rem;">Memproses gambar...</span>
+        </div>
+
+    </div>
+</div>
+
+    <script>
+        // ================= NAVIGASI =================
+
+        function showPage(page){
+
+
+        document.querySelectorAll('.page')
+        .forEach(
+        e=>e.classList.remove('active')
+        );
+
+
+        document
+        .getElementById('page-'+page)
+        .classList.add('active');
+
+
+        window.scrollTo({
+        top:0,
+        behavior:'smooth'
+        });
+
+
+        }
+
+
+
+        // ================= UPLOAD =================
+
+
+        const dropZone =
+        document.getElementById(
+        'dropZone'
+        );
+
+
+        const fileInput =
+        document.getElementById(
+        'fileInput'
+        );
+
+
+        const detectBtn =
+        document.getElementById(
+        'detectBtn'
+        );
+
+
+        const imagePreview =
+        document.getElementById(
+        'imagePreview'
+        );
+
+
+        const detectionResults =
+        document.getElementById(
+        'detectionResults'
+        );
+
+
+        const stats =
+        document.getElementById(
+        'stats'
+        );
+
+
+
+        let selectedFile=null;
+
+
+
+        dropZone.onclick=()=>{
+
+        fileInput.click();
+
+        };
+
+
+
+        fileInput.onchange=()=>{
+
+        handleFile(
+        fileInput.files[0]
+        );
+
+        };
+
+
+
+
+        function handleFile(file){
+
+
+        selectedFile=file;
+
+
+        detectBtn.disabled=false;
+
+        detectBtn.style.opacity="1";
+
+
+        let reader =
+        new FileReader();
+
+
+
+        reader.onload=(e)=>{
+
+
+        imagePreview.innerHTML=
+
+        `
+        <img 
+        src="${e.target.result}"
+
+        style="
+        width:100%;
+        border-radius:12px;
+        max-height:250px;
+        object-fit:contain;
+        ">
+
+        `;
+
+
+        };
+
+
+
+        reader.readAsDataURL(file);
+
+
+
+        detectionResults.innerHTML=
+
+        "Gambar siap dideteksi";
+
+
+        }
+
+
+        // ================= DETEKSI =================
+
+
+        detectBtn.onclick =
+        async ()=>{
+
+
+        if(!selectedFile)
+        return;
+
+
+
+        detectionResults.innerHTML=
+
+        "⏳ Mendeteksi...";
+
+
+
+        let formData =
+        new FormData();
+
+
+
+        formData.append(
+
+        "file",
+
+        selectedFile
+
+        );
+
+
+
+
+        try{
+
+
+        let response =
+        await fetch(
+
+        "/api/detect",
+
+        {
+
+        method:"POST",
+
+        body:formData
+
+        }
+
+        );
+
+
+
+        let data =
+        await response.json();
+
+
+
+
+        if(data.success){
+
+
+
+        imagePreview.innerHTML=
+
+        `
+
+        <img
+
+        src="data:image/jpeg;base64,${data.image}"
+
+        style="
+        width:100%;
+        border-radius:12px;
+        max-height:250px;
+        object-fit:contain;
+        "
+
+        >
+
+        `;
+
+
+
+        let html="";
+
+
+
+        data.detections.forEach(
+
+        det=>{
+
+
+        let color="#fff";
+
+
+        if(det.class==="kopi")
+
+        color="#f59e0b";
+
+
+
+        else if(det.class==="teh")
+
+        color="#22c55e";
+
+
+
+        else if(det.class==="susu")
+
+        color="#3b82f6";
+
+
+
+
+        html+=
+
+        `
+
+        <div style="
+        display:flex;
+        justify-content:space-between;
+        padding:8px;
+        border-bottom:1px solid #333;
+        ">
+
+
+        <span style="color:${color}">
+
+        ${det.class}
+
+        </span>
+
+
+        <span>
+
+        ${det.confidence}%
+
+        </span>
+
+
+        </div>
+
+
+        `;
+
+
+        });
+
+
+
+
+        detectionResults.innerHTML =
+
+        html || "Tidak ada objek";
+
+
+
+        document
+        .getElementById('totalCount')
+        .innerHTML=data.total;
+
+
+
+        document
+        .getElementById('classCount')
+        .innerHTML=
+
+        new Set(
+
+        data.detections.map(
+        x=>x.class
+        )
+
+        ).size;
+
+
+
+        document
+        .getElementById('timeCount')
+        .innerHTML=
+
+        data.inference_time+"ms";
+
+
+
+        stats.style.display="grid";
+
+
+
+        }
+
+
+        }catch(error){
+
+
+
+        detectionResults.innerHTML=
+
+        "❌ Server error";
+
+
+        }
+
+
+
+        };
+
+
+    </script>
+
+</body>
+</html>
